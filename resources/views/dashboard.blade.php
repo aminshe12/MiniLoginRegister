@@ -1,4 +1,4 @@
-@extends('layout.layout')
+@extends('layouts.layout')
 @section('content')
     <div class="dashboard-ecommerce">
         <div class="container-fluid dashboard-content ">

@@ -26,4 +26,10 @@ class UserRepo implements IUserRepo
             ->where('mobile', $mobile)
             ->first();
     }
+
+    public function createUser(array $data): User
+    {
+        return $this->model
+            ->create($data);
+    }
 }

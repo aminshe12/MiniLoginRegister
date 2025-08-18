@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Support\PersianDigits;
 use Illuminate\Foundation\Http\FormRequest;
 
-class GetUserMobileRequest extends FormRequest
+class CheckOtpRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -16,6 +16,7 @@ class GetUserMobileRequest extends FormRequest
     {
         $this->merge([
             'mobile' => isset($this->mobile) ? PersianDigits::toEnglish((string) $this->mobile) : null,
+            'otp' => isset($this->otp) ? PersianDigits::toEnglish((string) $this->otp) : null,
         ]);
     }
 
@@ -23,6 +24,9 @@ class GetUserMobileRequest extends FormRequest
     {
         return [
             'mobile' => ['required', 'regex:/^09\d{9}$/'],
+            'otp' => ['required', 'digits:6'],
         ];
     }
 }
+
+

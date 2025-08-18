@@ -1,76 +1,41 @@
-@extends('layouts.app')
+@extends('layouts.layoutLogin')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Register') }}</div>
-
-                <div class="card-body">
-                    <form method="POST" action="{{ route('register') }}">
-                        @csrf
-
-                        <div class="row mb-3">
-                            <label for="name" class="col-md-4 col-form-label text-md-end">{{ __('Name') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
-
-                                @error('name')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
-
-                                @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
-
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="password-confirm" class="col-md-4 col-form-label text-md-end">{{ __('Confirm Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
-                            </div>
-                        </div>
-
-                        <div class="row mb-0">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Register') }}
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+<div class="splash-container">
+    @include('partials.alert')
+    <div class="card ">
+        <div class="card-header text-center"></div>
+        <div class="card-header text-center font-bold">تکمیل ثبت نام</div>
+        <div class="card-body">
+            <form method="POST" action="{{ route('check-otp') }}">
+                @csrf
+                <input type="hidden" name="mobile" value="{{ $mobile ?? old('mobile') }}">
+                <div class="form-group">
+                    <input id="first_name" name="first_name" class="form-control form-control-lg @error('first_name') is-invalid @enderror" placeholder="نام" value="{{ old('first_name') }}" required>
+                    @error('first_name')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
-            </div>
+                <div class="form-group">
+                    <input id="last_name" name="last_name" class="form-control form-control-lg @error('last_name') is-invalid @enderror" placeholder="نام خانوادگی" value="{{ old('last_name') }}" required>
+                    @error('last_name')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="form-group">
+                    <input id="national_code" name="national_code" class="form-control form-control-lg @error('national_code') is-invalid @enderror" placeholder="کد ملی" value="{{ old('national_code') }}" required>
+                    @error('national_code')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="form-group">
+                    <input id="password" type="password" name="password" class="form-control form-control-lg @error('password') is-invalid @enderror" placeholder="کلمه عبور" required>
+                    @error('password')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg btn-block">تکمیل ثبت نام</button>
+            </form>
         </div>
     </div>
 </div>

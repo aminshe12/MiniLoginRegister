@@ -8,11 +8,11 @@
             <div class="card-body">
                 <form method="POST" action="{{route('check-otp')}}">
                     @csrf
+                    <input type="hidden" name="mobile" value="{{ $mobile ?? old('mobile') }}">
                     <div class="form-group">
                         <input class="form-control form-control-lg required-field @error('otp') is-invalid @enderror"
                                id="otp"  name="otp"
                                placeholder="One time password..." required>
-
                         @error('otp')
                         <div class="invalid-feedback">
                             {{ $message }}

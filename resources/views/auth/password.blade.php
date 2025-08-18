@@ -11,20 +11,17 @@
                         <input type="password" class="form-control form-control-lg required-field @error('password') is-invalid @enderror"
                                id="password"  name="password"
                                placeholder="Password" required>
-
                         @error('password')
                         <div class="invalid-feedback">
                             {{ $message }}
                         </div>
                         @enderror
                     </div>
-
-{{--                    hidden input to send mobile--}}
+                    {{-- inja baraye ersale megdare mobile be function va controller e marbute,
+                     az input hidden estefade mikonim ta dar hengame submit kardane form be function ersal shavad.--}}
                     <div class="form-group">
-                        <input type="hidden" name="mobile" value="{{ $mobile }}">
+                        <input type="hidden" name="mobile" value="{{ $mobile ?? old('mobile') }}">
                     </div>
-
-
                     <button type="submit" class="btn btn-primary btn-lg btn-block">Verify Password</button>
                 </form>
             </div>
