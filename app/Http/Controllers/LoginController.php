@@ -5,13 +5,15 @@ namespace App\Http\Controllers;
 use App\Jobs\SendOtp;
 use App\Http\Requests\CheckPasswordRequest;
 use App\Http\Requests\GetUserMobileRequest;
+use App\Http\Requests\CheckOtpRequest;
+use App\Http\Requests\RegisterUserRequest;
 use App\Repositories\Interfaces\IUserRepo;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
@@ -50,11 +52,19 @@ class LoginController extends Controller
              * agar karbar vujud nadashte bashad, jobe marbut be ersale otp(one time password) dispatch mishavad.
              * va be safheye daryafte otp hedayat shode va farayande login aghaz mishavad.
              */
-            SendOtp::dispatch($request->get('mobile'))
+            $mobile = $request->get('mobile');
+            $rateKey = 'otp_rl:' . $mobile . ':' . $request->ip();
+            if (RateLimiter::tooManyAttempts($rateKey, 3)) {
+                return view('auth.otp', ['mobile' => $mobile])
+                    ->withErrors(['otp' => "تعداد درخواست‌ها زیاد است. لطفاً 1دقیقه دیگر تلاش کنید."]);
+            }
+            RateLimiter::hit($rateKey, 60);
+
+            SendOtp::dispatch($mobile)
                 ->onConnection('redis')
                 ->onQueue('otp');
 
-            return view('auth.otp', ['mobile' => $request->get('mobile')]);
+            return view('auth.otp', ['mobile' => $mobile]);
         }
     }
 
@@ -92,57 +102,18 @@ class LoginController extends Controller
         }
 
         /*
-         * dar nahayat agar inja hastim yani password-e karbar be dorosti vared shode
+         * dar nahayat agar inja hastim yani passworde karbar be dorosti vared shode
          * va be safheye dashboard hedayat mikonim.
          */
         return view('dashboard');
     }
 
-    public function checkOtp(GetUserMobileRequest $request)
+    public function checkOtp(CheckOtpRequest $request)
     {
         $mobile = $request->get('mobile');
-
-        // Registration submission branch
-        if ($request->has('first_name')) {
-            $validator = Validator::make($request->all(), [
-                'first_name' => ['required','string','max:100'],
-                'last_name' => ['required','string','max:100'],
-                'national_code' => ['required','digits:10'],
-                'password' => ['required','string','min:6'],
-            ]);
-            if ($validator->fails()) {
-                return view('auth.register', ['mobile' => $mobile])
-                    ->withErrors($validator)
-                    ->withInput();
-            }
-
-            $exists = $this->userRepo->checkIfUserMobileExists($mobile);
-            if ($exists) {
-                return view('auth.password', ['mobile' => $mobile])
-                    ->withErrors(['mobile' => 'این شماره قبلا ثبت شده است.']);
-            }
-
-            $this->userRepo->createUser([
-                'first_name' => $request->get('first_name'),
-                'last_name' => $request->get('last_name'),
-                'mobile' => $mobile,
-                'national_code' => $request->get('national_code'),
-                'password' => Hash::make($request->get('password')),
-            ]);
-
-            return view('dashboard');
-        }
-
-        // OTP verification branch
-        $validator = Validator::make($request->all(), [
-            'otp' => ['required','digits:6'],
-        ]);
-        if ($validator->fails()) {
-            return view('auth.otp', ['mobile' => $mobile])
-                ->withErrors($validator)
-                ->withInput();
-        }
-
+        /*
+         * agar be in gesmat resid montazer code otp hastim va barasi mikonim code otp ba shomare mobile dorost bashad.
+         */
         $cacheKey = 'otp:mobile:' . $mobile;
         $cachedOtp = Cache::store('redis')->get($cacheKey);
         if (!$cachedOtp || $cachedOtp !== $request->get('otp')) {
@@ -155,6 +126,28 @@ class LoginController extends Controller
         return view('auth.register', ['mobile' => $mobile]);
     }
 
+    public function registerUser(RegisterUserRequest $request)
+    {
+        $mobile = $request->get('mobile');
+        /*
+         * agar shomare vjud dasht be safhe password hedayt mikonim agar vjud nadasht karbar jadid saxte mishe
+         * va be dashbord hedayt mishe.
+         */
+        $exists = $this->userRepo->checkIfUserMobileExists($mobile);
+        if ($exists) {
+            return view('auth.password', ['mobile' => $mobile])
+                ->withErrors(['mobile' => 'این شماره قبلا ثبت شده است.']);
+        }
+
+        // user jadid ijad mishavad
+        $this->userRepo->createUser($request->registrationPayload());
+
+        return view('dashboard');
+    }
+
+    /*
+     * Logout
+     */
     public function logout(Request $request): RedirectResponse
     {
         Auth::logout();

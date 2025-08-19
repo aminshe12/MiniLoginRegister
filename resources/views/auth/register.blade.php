@@ -4,10 +4,9 @@
 <div class="splash-container">
     @include('partials.alert')
     <div class="card ">
-        <div class="card-header text-center"></div>
-        <div class="card-header text-center font-bold">تکمیل ثبت نام</div>
+        <div class="card-header text-center">تکمیل ثبت نام</div>
         <div class="card-body">
-            <form method="POST" action="{{ route('check-otp') }}">
+            <form method="POST" action="{{ route('register-user') }}">
                 @csrf
                 <input type="hidden" name="mobile" value="{{ $mobile ?? old('mobile') }}">
                 <div class="form-group">

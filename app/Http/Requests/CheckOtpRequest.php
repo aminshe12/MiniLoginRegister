@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Support\PersianDigits;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CheckOtpRequest extends FormRequest
@@ -15,8 +14,8 @@ class CheckOtpRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'mobile' => isset($this->mobile) ? PersianDigits::toEnglish((string) $this->mobile) : null,
-            'otp' => isset($this->otp) ? PersianDigits::toEnglish((string) $this->otp) : null,
+            'mobile' => isset($this->mobile) ? toEnglish((string) $this->mobile) : null,
+            'otp' => isset($this->otp) ? toEnglish((string) $this->otp) : null,
         ]);
     }
 

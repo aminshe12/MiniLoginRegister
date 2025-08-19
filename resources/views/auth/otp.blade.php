@@ -3,8 +3,7 @@
     <div class="splash-container">
         @include('partials.alert')
         <div class="card ">
-            <div class="card-header text-center"></div>
-            <div class="card-header text-center font-bold">تأیید ورود با پیامک</div>
+            <div class="card-header text-center">تأیید ورود با پیامک</div>
             <div class="card-body">
                 <form method="POST" action="{{route('check-otp')}}">
                     @csrf

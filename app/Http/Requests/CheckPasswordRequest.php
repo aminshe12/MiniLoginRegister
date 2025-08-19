@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Support\PersianDigits;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CheckPasswordRequest extends FormRequest
@@ -15,7 +14,7 @@ class CheckPasswordRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'mobile' => isset($this->mobile) ? PersianDigits::toEnglish((string) $this->mobile) : null,
+            'mobile' => isset($this->mobile) ? toEnglish((string) $this->mobile) : null,
         ]);
     }
 

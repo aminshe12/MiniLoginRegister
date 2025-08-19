@@ -3,7 +3,7 @@
     <div class="splash-container">
         @include('partials.alert')
         <div class="card ">
-            <div class="card-header text-center"></div>
+            <div class="card-header text-center">رمز ورود</div>
             <div class="card-body">
                 <form method="POST" action="{{route('check-password')}}">
                     @csrf
@@ -22,7 +22,7 @@
                     <div class="form-group">
                         <input type="hidden" name="mobile" value="{{ $mobile ?? old('mobile') }}">
                     </div>
-                    <button type="submit" class="btn btn-primary btn-lg btn-block">Verify Password</button>
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">تأیید</button>
                 </form>
             </div>
         </div>

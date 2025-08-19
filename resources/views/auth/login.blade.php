@@ -3,7 +3,7 @@
     <div class="splash-container">
         @include('partials.alert')
         <div class="card ">
-            <div class="card-header text-center"></div>
+            <div class="card-header text-center">ورود یا ثبت نام</div>
             <div class="card-body">
                 <form method="POST" action="{{route('check-mobile')}}">
                     @csrf
@@ -14,11 +14,12 @@
 
                         @error('mobile')
                         <div class="invalid-feedback">
-                            {{ $message }}
+                            شماره موبایل باید 11 رقم باشد.
+
                         </div>
                         @enderror
                     </div>
-                    <button type="submit" class="btn btn-primary btn-lg btn-block">Sign in</button>
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">تأیید</button>
                 </form>
             </div>
         </div>
