@@ -20,7 +20,7 @@ php artisan queue:work redis --queue=otp
 
 ## اجرا
 ```bash
-# اجرای کارگر صف (در ترمینال جدا)
+# اجرای job (در ترمینال جدا)
 php artisan queue:work redis --queue=otp
 ```
 
