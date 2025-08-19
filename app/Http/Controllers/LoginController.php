@@ -53,6 +53,10 @@ class LoginController extends Controller
              * va be safheye daryafte otp hedayat shode va farayande login aghaz mishavad.
              */
             $mobile = $request->get('mobile');
+
+            /*
+             * hamchenin baraye jelogiri az request-haye motaaded rate-limit darim.
+             */
             $rateKey = 'otp_rl:' . $mobile . ':' . $request->ip();
             if (RateLimiter::tooManyAttempts($rateKey, 3)) {
                 return view('auth.otp', ['mobile' => $mobile])
@@ -122,6 +126,10 @@ class LoginController extends Controller
                 ->withInput();
         }
 
+        /*
+         * dar nahayat agar code sahih bashad, az cache pak mikonim
+         * va karbar ra be safheye sabte nam hedayat mikonim.
+         */
         Cache::store('redis')->forget($cacheKey);
         return view('auth.register', ['mobile' => $mobile]);
     }
@@ -133,14 +141,22 @@ class LoginController extends Controller
          * agar shomare vjud dasht be safhe password hedayt mikonim agar vjud nadasht karbar jadid saxte mishe
          * va be dashbord hedayt mishe.
          */
-        $exists = $this->userRepo->checkIfUserMobileExists($mobile);
+        $exists = $this->userRepo
+            ->checkIfUserMobileExists(
+                mobile: $mobile,
+            );
         if ($exists) {
             return view('auth.password', ['mobile' => $mobile])
                 ->withErrors(['mobile' => 'این شماره قبلا ثبت شده است.']);
         }
 
-        // user jadid ijad mishavad
-        $this->userRepo->createUser($request->registrationPayload());
+        /*
+         * karbare jadid ra ijad mikonim.
+         */
+        $this->userRepo
+            ->createUser(
+                data: $request->registrationPayload(),
+            );
 
         return view('dashboard');
     }
